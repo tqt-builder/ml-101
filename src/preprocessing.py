@@ -14,12 +14,13 @@ def encode_categorical_features(df, categorical_features):
 def feature_scaling(df, numerical_features):
   scaler = StandardScaler()
   df[numerical_features] = scaler.fit_transform(df[numerical_features])
-  return df
+  return df, scaler
 
 
 # Split the data into train set and test set
-def train_test_split(df, target_column):
+def split_data(df, target_column):
   X = df.drop(target_column, axis=1)
   y = df[target_column]
 
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+  return train_test_split(X, y, test_size = 0.2, random_state = 42)
+
