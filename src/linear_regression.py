@@ -36,9 +36,9 @@ class LinearRegression:
     return np.dot(x, self.weight) + self.bias
   
   def save(self):
-    np.save('models/y_array.pkl.npy', self.weight)
-    np.save('models/bias.pkl.npy', self.bias)
+    np.save('models/linear_regression/y_array.pkl.npy', self.weight)
+    np.save('models/linear_regression/bias.pkl.npy', self.bias)
   
   def load(self):
-    self.weight = np.load('models/y_array.pkl.npy')
-    self.bias = np.load('models/bias.pkl.npy')
+    self.weight = np.load('models/linear_regression/y_array.pkl.npy')
+    self.bias = np.load('models/linear_regression/bias.pkl.npy')

@@ -6,6 +6,14 @@ st.set_page_config(page_title="Insurance Premium Predictor", layout="centered")
 st.title("🏥 Insurance Premium Predictor")
 st.markdown("Enter your details below to get an estimated insurance cost.")
 
+# Add Model Selection to the Sidebar or Top
+selected_model = st.sidebar.radio(
+    "Select Prediction Engine",
+    ["Linear Regression", "Neural Network"],
+    index=0
+)
+model_map = {"Linear Regression": "linear", "Neural Network": "nn"}
+
 # 1. Create the input form
 with st.form("prediction_form"):
     col1, col2 = st.columns(2)
@@ -31,7 +39,8 @@ if submit:
         "bmi": bmi,
         "children": children,
         "smoker": smoker,
-        "region": region
+        "region": region,
+        "model_type": model_map[selected_model]
     }
     
     try:
@@ -41,7 +50,7 @@ if submit:
         
         if response.status_code == 200:
             result = response.json()
-            charges = result["estimated_charges"]
+            charges = result["prediction"]
             
             st.success("### Calculation Successful!")
             st.metric(label="Estimated Insurance Charges", value=f"${charges:,.2f}")

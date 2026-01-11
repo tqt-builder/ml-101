@@ -9,6 +9,9 @@ import os
 
 sys.path.append(os.path.join(os.getcwd(), 'src'))
 from linear_regression import LinearRegression
+from neural_network import SimpleNeuralNetwork
+
+# Initialize FastAPI
 
 app = FastAPI()
 
@@ -22,6 +25,9 @@ with open('models/scaler.pkl', 'rb') as f:
 with open('models/columns.pkl', 'rb') as f:
   model_columns = pickle.load(f)
 
+nn_model = SimpleNeuralNetwork(n_features=len(model_columns))
+nn_model.load()
+
 class InsuranceInput(BaseModel):
   age: int
   sex: str
@@ -29,6 +35,7 @@ class InsuranceInput(BaseModel):
   children: int
   smoker: str
   region: str
+  model_type: str = "linear"
 
 @app.post("/predict")
 def predict(data: InsuranceInput):
@@ -42,6 +49,9 @@ def predict(data: InsuranceInput):
   num_cols = ['age', 'bmi', 'children']
   df[num_cols] = scaler.transform(df[num_cols])
 
-  prediction = model.predict(df)
+  if data.model_type == "nn":
+    prediction = float(nn_model.predict(df)[0][0])
+  else:
+    prediction = float(model.predict(df)[0][0])
 
-  return {"prediction": prediction[0]}
+  return {"prediction": prediction}
