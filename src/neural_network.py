@@ -7,17 +7,17 @@ class SimpleNeuralNetwork:
         self.lr = learning_rate
         self.n_iters = n_iters
         
-        # 1. Initialize Weights and Biases
+        # 1. Initialize Weights and Biases with He Initialization
         # Layer 1: Input -> 5 neurons
-        self.W1 = np.random.randn(n_features, 5) * 0.01
+        self.W1 = np.random.randn(n_features, 5) * np.sqrt(2. / n_features)
         self.b1 = np.zeros((1, 5))
         
         # Layer 2: 5 neurons -> 5 neurons
-        self.W2 = np.random.randn(5, 5) * 0.01
+        self.W2 = np.random.randn(5, 5) * np.sqrt(2. / 5)
         self.b2 = np.zeros((1, 5))
         
         # Output Layer: 5 neurons -> 1 neuron (Estimated Charge)
-        self.W3 = np.random.randn(5, 1) * 0.01
+        self.W3 = np.random.randn(5, 1) * np.sqrt(2. / 5)
         self.b3 = np.zeros((1, 1))
 
     def relu(self, Z):
