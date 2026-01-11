@@ -4,6 +4,7 @@ import pandas as pd
 from linear_regression import LinearRegression
 from preprocessing import encode_categorical_features, feature_scaling, split_data
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
 import argparse
 from neural_network import SimpleNeuralNetwork
 import os
@@ -39,13 +40,24 @@ def train_linear_regression(X_train, y_train, X_test, y_test):
 
 def train_neural_network(X_train, y_train, X_test, y_test):
     n_features = X_train.shape[1]
+    
+    # 1. Scale Target Variable (y)
+    scaler_y = StandardScaler()
+    y_train_scaled = scaler_y.fit_transform(y_train.values.reshape(-1, 1))
+    
+    # Save the target scaler (needed for API to return actual dollar amounts)
+    with open('models/scaler_y.pkl', 'wb') as f:
+        pickle.dump(scaler_y, f)
+
     # Initialize NN: 2 layers, 5 neurons each
     model = SimpleNeuralNetwork(n_features=n_features, learning_rate=0.001, n_iters=20000)
     
-    print("\nStarting Neural Network Training...")
-    model.fit(X_train.values, y_train.values)
+    print("\nStarting Neural Network Training (Target Scaled)...")
+    model.fit(X_train.values, y_train_scaled)
     
-    y_pred = model.predict(X_test.values)
+    # 3. Predict and Inverse Transform (unscale) back to dollars
+    y_pred_scaled = model.predict(X_test.values)
+    y_pred = scaler_y.inverse_transform(y_pred_scaled)
     
     mae = mean_absolute_error(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)

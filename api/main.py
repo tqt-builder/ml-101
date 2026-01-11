@@ -16,14 +16,17 @@ from neural_network import SimpleNeuralNetwork
 app = FastAPI()
 
 # Load model, scaler and columns at startup
-model = LinearRegression()
-model.load()
-
 with open('models/scaler.pkl', 'rb') as f:
   scaler = pickle.load(f)
 
 with open('models/columns.pkl', 'rb') as f:
   model_columns = pickle.load(f)
+
+with open('models/scaler_y.pkl', 'rb') as f:
+  scaler_y = pickle.load(f)
+
+model = LinearRegression()
+model.load()
 
 nn_model = SimpleNeuralNetwork(n_features=len(model_columns))
 nn_model.load()
@@ -50,7 +53,8 @@ def predict(data: InsuranceInput):
   df[num_cols] = scaler.transform(df[num_cols])
 
   if data.model_type == "nn":
-    prediction = float(nn_model.predict(df)[0][0])
+    prediction_scaled = nn_model.predict(df)
+    prediction = float(scaler_y.inverse_transform(prediction_scaled)[0][0])
   else:
     prediction = float(model.predict(df)[0][0])
 
